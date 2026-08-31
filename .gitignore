@@ -1,0 +1,6 @@
+.DS_Store
+dist/
+node_modules/
+# raw store-screenshot captures may show a real inbox — keep them local
+store/before.png
+store/after.png

@@ -1,0 +1,221 @@
+// Gmail DarkBox — two jobs:
+// 1. Tag message bodies that are ALREADY dark with .gdb-no-invert so
+//    darkbox.css skips inverting them (otherwise a dark-designed
+//    newsletter would flip to blinding white).
+// 2. Sweep the card for Gmail chrome the static CSS missed — any
+//    still-white element gets .gdb-dim, any dark text on a dark
+//    background gets .gdb-lighten. This catches things whose class
+//    names vary or that we haven't enumerated (translate banner,
+//    "Summarize this email" chip, undo/redo pill, future Gmail churn).
+//
+// Gating: gate.js flags <html class="gdark"> when DarkBox is active.
+// The sweeps only run while that class is present (the CSS is inert
+// without it anyway), and a full sweep fires the moment it appears so a
+// scheduled switch-on catches up immediately.
+//
+// Flash avoidance: mutations are processed SYNCHRONOUSLY in the
+// MutationObserver callback, which runs as a microtask before the
+// browser paints — a white element added to the DOM is dimmed before it
+// is ever visible. Hidden elements (closed menus) are processed too, so
+// they are already dark when they open. A periodic full sweep mops up
+// anything that changed color without a childList/attribute mutation.
+
+(() => {
+  const DARK_LUMINANCE = 110; // 0–255; below this a background counts as dark
+  const html = document.documentElement;
+  const active = () => html.classList.contains('gdark');
+  // the reading-pane card, the pop-up "New Message" compose dialog, and
+  // Gmail's pop-up menus (.J-M — font size, alignment, etc. — are appended
+  // to <body>, outside the dialog; already-dark ones are untouched because
+  // the sweep only ever dims near-white backgrounds)
+  const CONTAINER = '.iY, .nH.Hd, .J-M';
+
+  function parseRgb(rgb) {
+    const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (!m) return null;
+    if (m[4] !== undefined && parseFloat(m[4]) < 0.5) return null; // effectively transparent
+    return [+m[1], +m[2], +m[3]];
+  }
+
+  function lumOf(c) {
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+
+  // --- job 1: skip inverting emails that are already dark ---------------
+
+  // Area-weighted vote over elements that declare an explicit background.
+  // Plain-text emails declare none and fall through to "not dark" → inverted,
+  // which is correct for default black-on-white text.
+  function emailLooksDark(body) {
+    let darkArea = 0;
+    let lightArea = 0;
+    const els = body.querySelectorAll('*');
+    const limit = Math.min(els.length, 80);
+    for (let i = 0; i < limit; i++) {
+      const c = parseRgb(getComputedStyle(els[i]).backgroundColor);
+      if (!c) continue;
+      const r = els[i].getBoundingClientRect();
+      const area = r.width * r.height;
+      if (lumOf(c) < DARK_LUMINANCE) darkArea += area;
+      else lightArea += area;
+    }
+    return darkArea > lightArea * 1.5 && darkArea > 10000;
+  }
+
+  function tagDarkEmails() {
+    for (const body of document.querySelectorAll('.iY .a3s:not([data-gdb])')) {
+      body.dataset.gdb = '1';
+      if (emailLooksDark(body)) body.classList.add('gdb-no-invert');
+    }
+  }
+
+  // --- job 2: sweep for missed white chrome / dark-on-dark text ---------
+
+  // effective background: walk up until something paints
+  function effectiveBgLuminance(el) {
+    let e = el;
+    while (e && !e.matches(CONTAINER)) {
+      const c = parseRgb(getComputedStyle(e).backgroundColor);
+      if (c) return lumOf(c);
+      e = e.parentElement;
+    }
+    return 20; // the card itself is dark
+  }
+
+  // Material state layers (pressed / selected toolbar toggles) and some
+  // backdrops are ::before/::after pseudo-elements — no classList, so tag
+  // the host and let darkbox.css restyle the pseudo-element.
+  function processPseudo(el) {
+    for (const [pseudo, cls] of [['::before', 'gdb-dim-before'], ['::after', 'gdb-dim-after']]) {
+      if (el.classList.contains(cls)) continue;
+      const ps = getComputedStyle(el, pseudo);
+      if (ps.content === 'none' || ps.content === 'normal') continue;
+      const c = parseRgb(ps.backgroundColor);
+      if (c && lumOf(c) > 210) el.classList.add(cls);
+    }
+  }
+
+  function processEl(el) {
+    if (el.nodeType !== 1) return;
+    const s = getComputedStyle(el);
+    processPseudo(el);
+
+    // near-white background → dim (never images). Two levels so hover /
+    // selected rows (light gray on white) stay distinguishable once dark.
+    if (
+      el.tagName !== 'IMG' &&
+      el.tagName !== 'VIDEO' &&
+      !el.classList.contains('gdb-dim') &&
+      !el.classList.contains('gdb-dim2')
+    ) {
+      const c = parseRgb(s.backgroundColor);
+      if (c && lumOf(c) > 210) {
+        el.classList.add(lumOf(c) > 242 ? 'gdb-dim' : 'gdb-dim2');
+        return;
+      }
+    }
+
+    // dark text directly on a dark background → lighten.
+    // Saturated colors (links, accents) keep their meaning.
+    if (el.classList.contains('gdb-lighten')) return;
+    const hasText = [...el.childNodes].some(
+      (n) => n.nodeType === 3 && n.textContent.trim()
+    );
+    if (hasText) {
+      const c = parseRgb(s.color);
+      if (
+        c &&
+        lumOf(c) < 120 &&
+        Math.max(...c) - Math.min(...c) < 50 &&
+        effectiveBgLuminance(el) < 90
+      ) {
+        el.classList.add('gdb-lighten');
+      }
+    }
+  }
+
+  function excluded(el) {
+    return !el.closest(CONTAINER) || !!el.closest('.a3s, .Am.editable');
+  }
+
+  function processTree(root) {
+    if (root.nodeType !== 1 || !root.closest || excluded(root)) return;
+    processEl(root);
+    for (const el of root.querySelectorAll('*')) {
+      if (!el.closest('.a3s, .Am.editable')) processEl(el);
+    }
+  }
+
+  function fullSweep() {
+    if (!active()) return;
+    for (const card of document.querySelectorAll(CONTAINER)) {
+      processEl(card); // a menu's own white backdrop is the container itself
+      for (const el of card.querySelectorAll('*')) {
+        if (!el.closest('.a3s, .Am.editable')) processEl(el);
+      }
+    }
+    tagDarkEmails();
+  }
+
+  // An ancestor's class swap (e.g. the compose dialog finishing its open
+  // animation) recolors descendants without mutating them, so the
+  // per-element handling above misses it. Re-sweep the whole container
+  // shortly after any burst of mutations inside it — turns a 5 s wait for
+  // the safety-net sweep into ~200 ms.
+  const pendingContainers = new Set();
+  let containerSweepTimer;
+  function scheduleContainerSweep(container) {
+    pendingContainers.add(container);
+    clearTimeout(containerSweepTimer);
+    containerSweepTimer = setTimeout(() => {
+      for (const c of pendingContainers) {
+        if (!c.isConnected) continue;
+        processEl(c);
+        for (const el of c.querySelectorAll('*')) {
+          if (!el.closest('.a3s, .Am.editable')) processEl(el);
+        }
+        if (c.matches('.iY')) tagDarkEmails();
+      }
+      pendingContainers.clear();
+    }, 200);
+  }
+
+  let emailTagPending;
+  const observer = new MutationObserver((mutations) => {
+    // gate.js flipped us on → catch up on everything already rendered
+    if (mutations.some((m) => m.target === html && m.type === 'attributes')) {
+      if (active()) fullSweep();
+    }
+    if (!active()) return;
+    for (const m of mutations) {
+      const t = m.target;
+      if (t.nodeType === 1 && t.closest && !t.closest('.a3s, .Am.editable')) {
+        const c = t.closest(CONTAINER); // typing in the body doesn't count
+        if (c) scheduleContainerSweep(c);
+      }
+      if (m.type === 'childList') {
+        for (const n of m.addedNodes) processTree(n);
+      } else if (m.type === 'attributes') {
+        // a class/style swap can turn an element white in place;
+        // reprocessing is idempotent, so our own class adds are no-ops
+        if (m.target.nodeType === 1 && !excluded(m.target)) {
+          processEl(m.target);
+        }
+      }
+    }
+    // message bodies build progressively — debounce the dark-email vote
+    clearTimeout(emailTagPending);
+    emailTagPending = setTimeout(tagDarkEmails, 150);
+  });
+  observer.observe(document.documentElement, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['class', 'style'],
+  });
+
+  // safety net for changes that slip past the observer
+  setInterval(fullSweep, 5000);
+
+  fullSweep();
+})();

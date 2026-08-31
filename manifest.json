@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "gDark — Dark Mode for Gmail",
+  "version": "2.1.0",
+  "description": "Darkens the white email pane and reply box that Gmail's dark theme leaves bright. Nothing else changes. Optional night schedule.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "64": "icons/icon-64.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "gDark — Gmail dark reading pane",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "css": [
+        "darkbox.css"
+      ],
+      "js": [
+        "gate.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "gmail-darkbox@texs.org",
+      "strict_min_version": "127.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

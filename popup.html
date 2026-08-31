@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon-32.png" alt="" width="20" height="20">
+    <span class="title">gDark</span>
+    <span id="status" class="status"></span>
+  </header>
+
+  <fieldset id="modes">
+    <label><input type="radio" name="mode" value="always"><span>Always on</span></label>
+    <label><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
+    <div id="schedule" class="schedule">
+      <label class="time">from <input type="time" id="start" step="60"></label>
+      <label class="time">until <input type="time" id="end" step="60"></label>
+    </div>
+    <label><input type="radio" name="mode" value="system"><span>Follow system dark mode</span></label>
+    <label><input type="radio" name="mode" value="off"><span>Off</span></label>
+  </fieldset>
+
+  <p class="hint">Darkens only Gmail's white reading pane and reply box. Changes apply instantly.</p>
+  <script src="popup.js"></script>
+</body>
+</html>

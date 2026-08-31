@@ -1,0 +1,32 @@
+Already switched Gmail to its Dark theme and still getting blinded every time you open an email? Same. Gmail's dark theme darkens the inbox, sidebar and toolbars — but the message you're actually reading, and the box you type your reply in, stay a huge bright white card. DarkBox darkens exactly that card, and nothing else.
+
+Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert every website you visit. If you're happy with Google's own dark theme and just want the white areas gone, this is the small, boring fix.
+
+**What it darkens**
+
+- The email you're reading (the white card in the reading pane)
+- The inline reply / forward box, including the To / Cc / Bcc rows and the formatting toolbar
+- Gmail's own controls inside that card: subject, sender, dates, Reply / Forward buttons, "Show trimmed content"
+
+**What it leaves alone**
+
+- Your Gmail theme, the inbox list, the sidebar — everything outside the card
+- Emails that were already designed dark (they're detected and not re-inverted into blinding white)
+- Photos and logos — images are counter-inverted so they look normal
+
+**Modes (click the toolbar button)**
+
+- Always on
+- On a schedule — for example dark from 9 pm to 7 am and Gmail's normal look during the day, even if your system theme is dark all the time
+- Follow system dark mode
+- Off
+
+**How it works**
+
+Gmail's own interface inside the card gets real dark colors. The email body — arbitrary HTML from whoever sent it — is inverted with a hue rotation, the same trick Dark Reader uses, but confined to the one white area Gmail forgot. It's one stylesheet and a small script that only runs on mail.google.com. No background process, nothing on other sites.
+
+**Privacy**
+
+No accounts, no analytics, no network requests. The only thing stored is your chosen mode and schedule, in the browser's own extension storage.
+
+Works with Gmail's Dark theme (Settings → Theme → Dark). Firefox 127 or newer. Not affiliated with Google; Gmail is a trademark of Google LLC.

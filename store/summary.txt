@@ -1,0 +1,1 @@
+Already using Gmail's Dark theme, but every email still opens as a big white area? This tool darkens just that area and the reply box, and leaves the rest of Gmail alone. No data collected. Optional night-only schedule.

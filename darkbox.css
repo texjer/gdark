@@ -1,0 +1,248 @@
+/* Gmail DarkBox — darkens only the reading-pane card (div.nH.a98.iY).
+ *
+ * Every rule is scoped under html.gdark, which gate.js toggles according
+ * to the user's mode (always / scheduled / follow system / off). With the
+ * class absent this stylesheet is inert, so switching is instant and
+ * needs no reload.
+ *
+ * Strategy: the card and Gmail's own chrome inside it get explicit dark
+ * colors; the email body (.a3s) — arbitrary sender HTML — gets
+ * invert(1) hue-rotate(180deg), with images counter-inverted back to
+ * normal. content.js tags emails that are already dark with
+ * .gdb-no-invert so they aren't flipped to light.
+ *
+ * Gmail's obfuscated class names (iY, a3s, M9, J-Z, ...) have been
+ * stable for years, but if Google renames them this file is the place
+ * to update selectors.
+ */
+
+/* the white card, and the pop-up "New Message" compose window (bottom-right
+ * dialog, div.nH.Hd). Both share the same inner compose markup (.M9,
+ * .Am.editable, .J-Z, .afV ...), so every rule below is scoped to
+ * :is(.iY, .nH.Hd) and applies to either. */
+html.gdark .nH.a98.iY,
+html.gdark .nH.Hd {
+  background-color: #1c1c21 !important;
+}
+/* compose window title bar ("New Message") and its title text */
+html.gdark .nH.Hd .nH.Hy,
+html.gdark .nH.Hd .Hy {
+  background-color: #26262c !important;
+}
+html.gdark .nH.Hd .aYF,
+html.gdark .nH.Hd .Hp {
+  color: #e6e6eb !important;
+}
+/* subject line and its placeholder */
+html.gdark .nH.Hd .aoT {
+  background-color: transparent !important;
+  color: #e6e6eb !important;
+}
+html.gdark .nH.Hd .aoT::placeholder,
+html.gdark .nH.Hd .agP::placeholder {
+  color: #a2a2ac !important;
+}
+/* bottom action row (Send, attach, link, emoji ...) — glyphs are dark
+ * gstatic sprites, so lighten them like the formatting toolbar */
+html.gdark .nH.Hd .a8X .wG,
+html.gdark .nH.Hd .a8X .J-Z-I {
+  filter: invert(0.8);
+}
+html.gdark .nH.Hd .a8X .T-I-atl { /* keep the blue Send button un-inverted */
+  filter: none;
+}
+
+/* white bars inside the card: reply-button row, smart-reply row, compose footer */
+html.gdark :is(.iY, .nH.Hd) .nH,
+html.gdark :is(.iY, .nH.Hd) .nr.wR,
+html.gdark :is(.iY, .nH.Hd) .aC2 {
+  background-color: transparent !important;
+}
+
+/* Gmail chrome text inside the card */
+html.gdark :is(.iY, .nH.Hd) .hP,        /* subject */
+html.gdark :is(.iY, .nH.Hd) .gD,        /* sender name */
+html.gdark :is(.iY, .nH.Hd) .gH,
+html.gdark :is(.iY, .nH.Hd) .amn,
+html.gdark :is(.iY, .nH.Hd) h2 {
+  color: #e6e6eb !important;
+}
+html.gdark :is(.iY, .nH.Hd) .go,        /* sender email */
+html.gdark :is(.iY, .nH.Hd) .g3,        /* date */
+html.gdark :is(.iY, .nH.Hd) .g2,
+html.gdark :is(.iY, .nH.Hd) .hb,
+html.gdark :is(.iY, .nH.Hd) .adx,
+html.gdark :is(.iY, .nH.Hd) .ams {      /* Reply / Forward buttons */
+  color: #a2a2ac !important;
+}
+html.gdark :is(.iY, .nH.Hd) .gs {
+  color: #d8d8de;
+}
+html.gdark :is(.iY, .nH.Hd) .ams {
+  border-color: #5f5f6a !important;
+}
+
+/* the email body itself: invert whatever the sender styled.
+ * The explicit light background is what the inversion turns dark —
+ * without it, transparent bodies would invert against nothing. */
+html.gdark :is(.iY, .nH.Hd) .a3s {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #e3e3e8;
+  border-radius: 8px;
+}
+/* counter-invert real imagery so photos/logos look normal */
+html.gdark :is(.iY, .nH.Hd) .a3s img,
+html.gdark :is(.iY, .nH.Hd) .a3s video,
+html.gdark :is(.iY, .nH.Hd) .a3s [style*="background-image"] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* emails that are already dark (tagged by content.js) are left alone */
+html.gdark :is(.iY, .nH.Hd) .a3s.gdb-no-invert,
+html.gdark :is(.iY, .nH.Hd) .a3s.gdb-no-invert img,
+html.gdark :is(.iY, .nH.Hd) .a3s.gdb-no-invert video,
+html.gdark :is(.iY, .nH.Hd) .a3s.gdb-no-invert [style*="background-image"] {
+  filter: none;
+  background-color: transparent;
+}
+
+/* inline reply / forward compose inside the card */
+html.gdark :is(.iY, .nH.Hd) .M9,
+html.gdark :is(.iY, .nH.Hd) .aoI {
+  background-color: transparent !important;
+  color: #d8d8de;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 :is(table, td):not(.Am.editable *) {
+  background-color: transparent !important;
+}
+/* the editable body gets the same invert treatment as read emails,
+ * so quoted content below the cursor matches what was read above */
+html.gdark :is(.iY, .nH.Hd) .Am.editable {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #e3e3e8 !important;
+}
+html.gdark :is(.iY, .nH.Hd) .Am.editable img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* expanded compose header: From / To / Cc / Bcc rows */
+html.gdark :is(.iY, .nH.Hd) .M9 .agh,   /* recipient area */
+html.gdark :is(.iY, .nH.Hd) .M9 .aGb,   /* recipient row bar */
+html.gdark :is(.iY, .nH.Hd) .aC3 {      /* compose footer strip */
+  background-color: transparent !important;
+}
+
+/* message-header icons, all matched to the reply/more gray (#a2a2ac):
+ * - star: a dark gstatic sprite on span.T-KT::before — filter the span;
+ *   the starred state (T-KT-Jp) is yellow, leave it un-inverted
+ * - "show details" dropdown arrow: dark sprite on img.ajz
+ * - reply / reply-all / more / emoji buttons draw with currentColor,
+ *   so recoloring the button is enough */
+html.gdark :is(.iY, .nH.Hd) .T-KT {
+  filter: invert(0.8);
+}
+html.gdark :is(.iY, .nH.Hd) .T-KT.T-KT-Jp {
+  filter: none;
+}
+html.gdark :is(.iY, .nH.Hd) .ajz {
+  filter: invert(0.8);
+}
+html.gdark :is(.iY, .nH.Hd) button[class*="pYTkkf"] {
+  color: #a2a2ac !important;
+}
+
+/* separators between messages in a conversation: Gmail's
+ * rgba(100,121,143,0.12) border is invisible on dark */
+html.gdark :is(.iY, .nH.Hd) .G3 {
+  border-top-color: rgba(162, 162, 172, 0.5) !important;
+}
+
+/* "Show trimmed content" / quoted-text "⋯" pill — visible but not glaring;
+ * the dots are a dark gstatic more_horiz image, so invert them light */
+html.gdark :is(.iY, .nH.Hd) .ajR {
+  background-color: #3a3a42 !important;
+}
+html.gdark :is(.iY, .nH.Hd) .ajT {
+  filter: invert(0.8);
+}
+html.gdark :is(.iY, .nH.Hd) .M9 input { /* recipient + subject inputs */
+  background-color: transparent !important;
+  color: #e6e6eb !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 label.gO {  /* "From" / "To" / "Cc" labels */
+  color: #a2a2ac !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 .aB {   /* "Cc" / "Bcc" toggle links */
+  color: #a2a2ac !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 .az2 {  /* From account selector */
+  border-color: #5f5f6a !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 .az2,
+html.gdark :is(.iY, .nH.Hd) .M9 .az2 * {
+  color: #d8d8de !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 .agh,
+html.gdark :is(.iY, .nH.Hd) .M9 .agh span { /* collapsed recipient summary */
+  color: #d8d8de;
+}
+/* recipient chips */
+html.gdark :is(.iY, .nH.Hd) .M9 .afV {
+  background-color: #2f2f36 !important;
+  border-color: #5f5f6a !important;
+}
+html.gdark :is(.iY, .nH.Hd) .M9 .afV,
+html.gdark :is(.iY, .nH.Hd) .M9 .afV * {
+  color: #e6e6eb !important;
+}
+
+/* generic sweep tags applied by content.js — inside the card, the compose
+ * dialog, or a pop-up menu (.J-M lives under <body>): near-white
+ * backgrounds get dimmed (two levels so hover/selected rows still read),
+ * light ::before/::after state layers get dimmed via their host, and dark
+ * text sitting on a dark background gets lightened */
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim,
+html.gdark .J-M.gdb-dim {
+  background-color: #26262c !important;
+}
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim2,
+html.gdark .J-M.gdb-dim2 {
+  background-color: #34343c !important;
+}
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-before::before,
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-after::after {
+  background-color: #3f3f48 !important;
+}
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-lighten {
+  color: #d8d8de !important;
+}
+
+/* floating compose action shelf (toolbar + Send dock over the content
+ * when you scroll a tall reply): its white backdrop is an ::after
+ * pseudo-element on .aDj — pseudo-elements have no classList, so the
+ * content.js sweep can never tag them; this must stay a static rule */
+html.gdark :is(.iY, .nH.Hd) .aDj::after {
+  background-color: #1c1c21 !important;
+}
+/* undo/redo pill that rides on the docked shelf */
+html.gdark :is(.iY, .nH.Hd) .Bswxkd {
+  background-color: #2a2a31 !important;
+  color: #d8d8de !important;
+}
+/* inline compose window frame (1px rounded border on td.I5) */
+html.gdark :is(.iY, .nH.Hd) td.I5 {
+  border-color: rgba(162, 162, 172, 0.4) !important;
+}
+
+/* compose formatting toolbar (Sans Serif / B / I / U ...) */
+html.gdark :is(.iY, .nH.Hd) .J-Z {
+  background-color: #2a2a31 !important;
+}
+html.gdark :is(.iY, .nH.Hd) .J-Z,
+html.gdark :is(.iY, .nH.Hd) .J-Z div {
+  color: #d8d8de !important;
+}
+/* toolbar glyphs are gstatic sprite background-images on .aaA divs */
+html.gdark :is(.iY, .nH.Hd) .M9 .aaA {
+  filter: invert(0.8);
+}
