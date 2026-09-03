@@ -1,4 +1,4 @@
-# gDark — dark mode for Gmail's white areas
+# GDark — dark mode for Gmail's white areas & Google Chat
 
 Dark-modes **just the white email card** in Gmail's reading pane — the message
 you're reading and the inline reply box — leaving the rest of your Gmail theme

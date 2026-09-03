@@ -5,9 +5,9 @@ keyword-dense for the searches people actually type: "gmail dark mode
 extension", "gmail dark mode white area", "gmail reading pane white",
 "gmail dark theme email still white".
 
-## Name (27 chars — AMO cap 50, Chrome cap 75)
+## Name (33 chars — AMO cap 50, Chrome cap 75)
 
-    gDark — Dark Mode for Gmail
+    GDark: Dark mode for Gmail & Chat
 
 ## Summary (AMO, ≤250 chars) / short description
 
