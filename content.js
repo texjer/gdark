@@ -100,10 +100,72 @@
     }
   }
 
+  // Chat-only helpers ---------------------------------------------------
+
+  // monochrome dark SVG icons (compose row, header buttons) are invisible
+  // on the dark base; invert them, but never a colorful logo
+  function processSvg(el) {
+    if (el.classList.contains('gdb-svg')) return;
+    const s = getComputedStyle(el);
+    const f = parseRgb(s.fill) || parseRgb(s.color);
+    if (!f || lumOf(f) >= 120 || Math.max(...f) - Math.min(...f) >= 50) return;
+    const parts = el.querySelectorAll('path, circle, rect, polygon');
+    for (let i = 0; i < Math.min(parts.length, 12); i++) {
+      const pf = parseRgb(getComputedStyle(parts[i]).fill);
+      if (pf && Math.max(...pf) - Math.min(...pf) >= 50) return; // colorful — leave it
+    }
+    el.classList.add('gdb-svg');
+  }
+
+  // light gray separator borders (conversation list rows) stay glaring on
+  // dark; tag them so the CSS darkens the border color
+  function processBorders(el, s) {
+    if (el.classList.contains('gdb-border')) return;
+    for (const side of ['Top', 'Bottom', 'Left', 'Right']) {
+      if (parseFloat(s[`border${side}Width`]) > 0) {
+        const c = parseRgb(s[`border${side}Color`]);
+        if (c && lumOf(c) > 150 && Math.max(...c) - Math.min(...c) < 50) {
+          el.classList.add('gdb-border');
+          return;
+        }
+      }
+    }
+  }
+
+  // Chat renders some overlays (hovercards etc.) inside shadow roots, which
+  // neither the injected stylesheet nor querySelectorAll can reach. Adopt
+  // each open shadow root: inject the sweep styles, observe it, sweep it.
+  const shadowStyles = [];
+  const seenRoots = new WeakSet();
+  const SHADOW_CSS = `
+.gdb-dim { background-color: #26262c !important; }
+.gdb-dim2 { background-color: #34343c !important; }
+.gdb-dim-before::before, .gdb-dim-after::after { background-color: #3f3f48 !important; }
+.gdb-lighten { color: #d8d8de !important; }
+.gdb-border { border-color: #3f3f48 !important; }
+.gdb-svg { filter: invert(0.75) hue-rotate(180deg); }
+`;
+  function adoptShadowRoot(root) {
+    if (seenRoots.has(root)) return;
+    seenRoots.add(root);
+    const st = document.createElement('style');
+    st.textContent = SHADOW_CSS;
+    root.appendChild(st);
+    st.disabled = !active();
+    shadowStyles.push(st);
+    observer.observe(root, OBS_OPTS);
+    for (const el of root.querySelectorAll('*')) processEl(el);
+  }
+
   function processEl(el) {
     if (el.nodeType !== 1) return;
     const s = getComputedStyle(el);
     processPseudo(el);
+    if (IS_CHAT) {
+      if (el instanceof SVGSVGElement) return processSvg(el);
+      processBorders(el, s);
+      if (el.shadowRoot) adoptShadowRoot(el.shadowRoot);
+    }
 
     // near-white background → dim (never images). Two levels so hover /
     // selected rows (light gray on white) stay distinguishable once dark.
@@ -140,6 +202,7 @@
   }
 
   function excluded(el) {
+    if (IS_CHAT) return false; // everything in a chat document is Google chrome
     return !el.closest(CONTAINER) || !!el.closest('.a3s, .Am.editable');
   }
 
@@ -187,8 +250,9 @@
 
   let emailTagPending;
   const observer = new MutationObserver((mutations) => {
-    // gate.js flipped us on → catch up on everything already rendered
+    // gate.js flipped us on/off → catch up, and sync shadow-root styles
     if (mutations.some((m) => m.target === html && m.type === 'attributes')) {
+      for (const st of shadowStyles) st.disabled = !active();
       if (active()) fullSweep();
     }
     if (!active()) return;
@@ -212,12 +276,13 @@
     clearTimeout(emailTagPending);
     emailTagPending = setTimeout(tagDarkEmails, 150);
   });
-  observer.observe(document.documentElement, {
+  const OBS_OPTS = {
     subtree: true,
     childList: true,
     attributes: true,
     attributeFilter: ['class', 'style'],
-  });
+  };
+  observer.observe(document.documentElement, OBS_OPTS);
 
   // safety net for changes that slip past the observer
   setInterval(fullSweep, 5000);

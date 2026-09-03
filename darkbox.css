@@ -205,6 +205,24 @@ html.gdark.gdb-chat body {
   color-scheme: dark;
 }
 
+/* chat: the message box reads as "type here" — one step lighter than
+ * everything around it — and separator rules stop glowing */
+html.gdark.gdb-chat [role="textbox"] {
+  background-color: #34343c !important;
+  border-radius: 12px;
+  caret-color: #e3e3e8;
+}
+html.gdark.gdb-chat hr {
+  border-color: #3f3f48 !important;
+  background-color: #3f3f48 !important;
+}
+html.gdark.gdb-chat .gdb-border {
+  border-color: #3f3f48 !important;
+}
+html.gdark.gdb-chat .gdb-svg {
+  filter: invert(0.75) hue-rotate(180deg);
+}
+
 /* generic sweep tags applied by content.js — inside the card, the compose
  * dialog, or a pop-up menu (.J-M lives under <body>): near-white
  * backgrounds get dimmed (two levels so hover/selected rows still read),

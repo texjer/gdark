@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GDark: Dark mode for Gmail & Chat",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Darkens the white email pane and reply box that Gmail's dark theme leaves bright. Nothing else changes. Optional night schedule.",
   "icons": {
     "16": "icons/icon-16.png",
@@ -39,13 +39,26 @@
     },
     {
       "matches": [
-        "https://mail.google.com/*",
-        "https://chat.google.com/*"
+        "https://mail.google.com/*"
+      ],
+      "exclude_matches": [
+        "https://mail.google.com/chat/*"
       ],
       "js": [
         "content.js"
       ],
       "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://mail.google.com/chat/*",
+        "https://chat.google.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
       "all_frames": true
     }
   ],
