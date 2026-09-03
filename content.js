@@ -24,11 +24,16 @@
   const DARK_LUMINANCE = 110; // 0–255; below this a background counts as dark
   const html = document.documentElement;
   const active = () => html.classList.contains('gdark');
-  // the reading-pane card, the pop-up "New Message" compose dialog, and
-  // Gmail's pop-up menus (.J-M — font size, alignment, etc. — are appended
-  // to <body>, outside the dialog; already-dark ones are untouched because
-  // the sweep only ever dims near-white backgrounds)
-  const CONTAINER = '.iY, .nH.Hd, .J-M';
+  // In a Google Chat document (standalone site, or the frames Gmail embeds
+  // for the chat panel and pop-up conversations) everything is Google
+  // chrome — no arbitrary sender HTML — so the whole body is swept and no
+  // invert filter is needed. In the Gmail document proper, the containers
+  // are the reading-pane card, the pop-up "New Message" compose dialog, and
+  // Gmail's pop-up menus (.J-M — appended to <body>, outside the dialog;
+  // already-dark ones are untouched because the sweep only ever dims
+  // near-white backgrounds).
+  const IS_CHAT = html.classList.contains('gdb-chat');
+  const CONTAINER = IS_CHAT ? 'body' : '.iY, .nH.Hd, .J-M';
 
   function parseRgb(rgb) {
     const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);

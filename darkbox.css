@@ -196,24 +196,38 @@ html.gdark :is(.iY, .nH.Hd) .M9 .afV * {
   color: #e6e6eb !important;
 }
 
+/* Google Chat documents (gate.js adds .gdb-chat): dark base — the sweep
+ * in content.js dims every remaining white surface and lightens dark text */
+html.gdark.gdb-chat,
+html.gdark.gdb-chat body {
+  background-color: #1c1c21 !important;
+  color: #d8d8de;
+  color-scheme: dark;
+}
+
 /* generic sweep tags applied by content.js — inside the card, the compose
  * dialog, or a pop-up menu (.J-M lives under <body>): near-white
  * backgrounds get dimmed (two levels so hover/selected rows still read),
  * light ::before/::after state layers get dimmed via their host, and dark
  * text sitting on a dark background gets lightened */
 html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim,
-html.gdark .J-M.gdb-dim {
+html.gdark .J-M.gdb-dim,
+html.gdark.gdb-chat .gdb-dim {
   background-color: #26262c !important;
 }
 html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim2,
-html.gdark .J-M.gdb-dim2 {
+html.gdark .J-M.gdb-dim2,
+html.gdark.gdb-chat .gdb-dim2 {
   background-color: #34343c !important;
 }
 html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-before::before,
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-after::after {
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-after::after,
+html.gdark.gdb-chat .gdb-dim-before::before,
+html.gdark.gdb-chat .gdb-dim-after::after {
   background-color: #3f3f48 !important;
 }
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-lighten {
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-lighten,
+html.gdark.gdb-chat .gdb-lighten {
   color: #d8d8de !important;
 }
 

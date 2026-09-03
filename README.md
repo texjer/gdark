@@ -2,7 +2,9 @@
 
 Dark-modes **just the white email card** in Gmail's reading pane — the message
 you're reading and the inline reply box — leaving the rest of your Gmail theme
-untouched. Works in Firefox and Chrome from one folder (Manifest V3).
+untouched. Also darkens Google Chat — the chat panel and pop-up
+conversations inside Gmail, and the standalone chat.google.com. Works in
+Firefox and Chrome from one folder (Manifest V3).
 
 **Install:** [Firefox Add-ons (AMO)](https://addons.mozilla.org/firefox/) and the
 Chrome Web Store — both listings are in review; links land here once live.
@@ -76,7 +78,7 @@ Known limits:
 
 No accounts, no analytics, no network requests, no remote code, no third-party
 libraries. Permissions are `storage` (your mode + schedule) and
-`mail.google.com` (the only site the content scripts run on). The zip uploaded
+`mail.google.com` + `chat.google.com` (the only sites the content scripts run on). The zip uploaded
 to the stores is built by `build.sh` from these exact files.
 
 ## License

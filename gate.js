@@ -40,6 +40,15 @@
     }
   }
 
+  // Google Chat documents (the standalone site, and the frames Gmail embeds
+  // for the chat panel and pop-up conversations) get a marker class: they
+  // have no Gmail reading-pane markup, so darkbox.css gives them a dark
+  // base and content.js sweeps the whole body instead.
+  const IS_CHAT =
+    location.hostname === 'chat.google.com' ||
+    location.pathname.startsWith('/chat/');
+  if (IS_CHAT) document.documentElement.classList.add('gdb-chat');
+
   function apply() {
     document.documentElement.classList.toggle('gdark', shouldBeOn());
   }
