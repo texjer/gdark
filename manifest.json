@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "gDark — Dark Mode for Gmail",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Darkens the white email pane and reply box that Gmail's dark theme leaves bright. Nothing else changes. Optional night schedule.",
   "icons": {
     "16": "icons/icon-16.png",
