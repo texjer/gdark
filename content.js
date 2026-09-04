@@ -144,6 +144,7 @@
 .gdb-lighten { color: #d8d8de !important; }
 .gdb-border { border-color: #3f3f48 !important; }
 .gdb-svg { filter: invert(0.75) hue-rotate(180deg); }
+::selection { background-color: #3b5b8f !important; color: #f2f2f5 !important; }
 `;
   function adoptShadowRoot(root) {
     if (seenRoots.has(root)) return;
