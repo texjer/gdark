@@ -1,5 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" rx="28" fill="#1c1c21"/>
-  <rect x="24" y="34" width="80" height="60" rx="8" fill="#2a2a31"/>
-  <path d="M30 90 V42 L64 68 L98 42 V90" fill="none" stroke="#8a9cff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs><linearGradient id="m-legs" gradientUnits="userSpaceOnUse" x1="0" y1="23.18" x2="0" y2="76.82"><stop offset="0" stop-color="#FF6B4A"/><stop offset="0.7" stop-color="#4C8DFF"/></linearGradient><linearGradient id="m-left" gradientUnits="userSpaceOnUse" x1="12" y1="23.18" x2="50" y2="52.15"><stop offset="0" stop-color="#FF6B4A"/><stop offset="1" stop-color="#4C8DFF"/></linearGradient><linearGradient id="m-right" gradientUnits="userSpaceOnUse" x1="88" y1="23.18" x2="50" y2="52.15"><stop offset="0" stop-color="#84C5FF"/><stop offset="1" stop-color="#4C8DFF"/></linearGradient></defs>
+  <path d="M12 23.18 V76.82" fill="none" stroke="url(#m-legs)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M88 23.18 V76.82" fill="none" stroke="url(#m-legs)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M83.15 16.81 L50 42.09 L50 62.21 L92.85 29.54 Z" fill="url(#m-right)"/>
+  <circle cx="88" cy="23.18" r="8" fill="url(#m-right)"/>
+  <path d="M16.85 16.81 L50 42.09 L50 62.21 L7.15 29.54 Z" fill="url(#m-left)"/>
+  <circle cx="12" cy="23.18" r="8" fill="url(#m-left)"/>
 </svg>

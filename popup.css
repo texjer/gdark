@@ -1,11 +1,24 @@
-:root { color-scheme: light dark; }
+/* Same palette as the icon and the whatfont-ext options page: blue #4C8DFF,
+   pale #84C5FF, coral #FF6B4A on #fff / #202124. */
+:root {
+  color-scheme: light dark;
+  --blue: #4C8DFF;
+  --pale: #84C5FF;
+  --coral: #FF6B4A;
+  --ink: light-dark(#1a1a1a, #e3e3e3);
+  --muted: light-dark(#6b6b70, #a3a3a8);
+  --bg: light-dark(#ffffff, #202124);
+  --well: light-dark(#f2f3f5, #282a2d);
+  --line: light-dark(#dddddd, #3c3f43);
+  --hover: rgba(127, 127, 127, 0.12);
+}
 body {
   margin: 0;
   width: 280px;
   padding: 12px 14px 10px;
-  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: light-dark(#1c1c21, #e3e3e8);
-  background: light-dark(#ffffff, #1c1c21);
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
 }
 header {
   display: flex;
@@ -13,33 +26,76 @@ header {
   gap: 8px;
   margin-bottom: 10px;
 }
-header img { border-radius: 5px; }
-.title { font-weight: 600; font-size: 14px; }
-.status {
-  margin-left: auto;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: light-dark(#e8e8ec, #2a2a31);
-  color: light-dark(#5f5f6a, #a2a2ac);
+.title { font-weight: 600; font-size: 15px; }
+.switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--well);
 }
-.status.on { background: #2f6b3a; color: #e3f3e6; }
-fieldset { border: 0; margin: 0; padding: 0; }
+.switch button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 0;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.switch button:hover { color: var(--ink); background: var(--hover); }
+/* The selected segment previews what it does: Light is a white card with a
+   coral sun, Dark is a blue card with a coral moon. Same in both themes. */
+.switch button[aria-checked="true"] {
+  background: #ffffff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  cursor: default;
+}
+.switch button[aria-checked="true"]:last-child { background: var(--blue); color: #ffffff; }
+.switch button[aria-checked="true"] .glyph { color: var(--coral); }
+.glyph { width: 18px; height: 18px; flex: none; }
+.note {
+  margin: 8px 0 0;
+  padding-left: 8px;
+  border-left: 3px solid var(--coral);
+  font-size: 11px;
+  color: var(--muted);
+}
+fieldset { border: 0; margin: 12px 0 0; padding: 0; }
+legend {
+  padding: 0;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
 fieldset > label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
+  gap: 10px;
+  margin: 0 -8px;
+  padding: 6px 8px;
+  border-radius: 8px;
   cursor: pointer;
 }
-input[type="radio"] { margin: 0; accent-color: light-dark(#1c1c21, #e3e3e8); }
+fieldset > label:hover { background: var(--hover); }
+input[type="radio"] { margin: 0; accent-color: var(--blue); }
 .schedule {
   display: none;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 6px 8px;
   padding: 2px 0 8px 24px;
-  color: light-dark(#5f5f6a, #a2a2ac);
+  color: var(--muted);
 }
 .schedule.open { display: grid; }
 .time { display: contents; }
@@ -50,12 +106,13 @@ input[type="time"] {
   box-sizing: border-box;
   padding: 2px 4px;
   border-radius: 5px;
-  border: 1px solid light-dark(#c8c8ce, #5f5f6a);
-  background: light-dark(#fff, #2a2a31);
+  border: 1px solid var(--line);
+  background: var(--well);
   color: inherit;
 }
+input[type="time"]:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
 .hint {
   margin: 10px 0 0;
   font-size: 11px;
-  color: light-dark(#5f5f6a, #a2a2ac);
+  color: var(--muted);
 }

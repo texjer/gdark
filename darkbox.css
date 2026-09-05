@@ -224,12 +224,29 @@ html.gdark :is(.iY, .nH.Hd) .Am.editable::selection {
   color: #ececec !important;            /* → near-black after invert */
 }
 
-/* chat: the message box reads as "type here" — one step lighter than
- * everything around it — and separator rules stop glowing */
+/* chat: the compose box (toolbar row + message field) is one slate
+ * surface. Google tints its container with a ::before of blue at 8%
+ * opacity — over our dark base that lands as a muddy navy — so content.js
+ * tags that container .gdb-compose and the tint layer is repainted solid.
+ * The textbox itself stays transparent so nothing breaks the surface. */
+html.gdark.gdb-chat .gdb-compose::before {
+  background-color: #323b50 !important;
+  opacity: 1 !important;
+}
 html.gdark.gdb-chat [role="textbox"] {
-  background-color: #34343c !important;
-  border-radius: 12px;
+  background-color: transparent !important;
   caret-color: #e3e3e8;
+}
+/* wrappers around the field that the sweep dimmed (Firefox paints the
+ * field's own box) go transparent too; buttons keep their state layers */
+html.gdark.gdb-chat .gdb-compose :is(div, span):is(.gdb-dim, .gdb-dim2) {
+  background-color: transparent !important;
+}
+/* chat: Google's blue-600 (#0b57d0) text — smart-reply chips, "more
+ * unread", links — is too intense on dark; content.js tags it and it gets
+ * the blue Google itself uses on dark surfaces */
+html.gdark.gdb-chat .gdb-blue {
+  color: #8ab4f8 !important;
 }
 html.gdark.gdb-chat hr {
   border-color: #3f3f48 !important;

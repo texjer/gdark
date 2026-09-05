@@ -6,20 +6,27 @@
 </head>
 <body>
   <header>
-    <img src="icons/icon-32.png" alt="" width="20" height="20">
+    <img src="icons/icon-32.png" alt="" width="22" height="22">
     <span class="title">GDark</span>
-    <span id="status" class="status"></span>
   </header>
 
-  <fieldset id="modes">
-    <label><input type="radio" name="mode" value="always"><span>Always on</span></label>
-    <label><input type="radio" name="mode" value="schedule"><span>On a schedule</span></label>
+  <div id="switch" class="switch" role="radiogroup" aria-label="Gmail appearance">
+    <button type="button" role="radio" data-dark="false">
+      <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Light</button>
+    <button type="button" role="radio" data-dark="true">
+      <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="currentColor"/></svg>Dark</button>
+  </div>
+  <p id="note" class="note"></p>
+
+  <fieldset id="auto">
+    <legend>Switch automatically</legend>
+    <label><input type="radio" name="auto" value="none"><span>Never</span></label>
+    <label><input type="radio" name="auto" value="schedule"><span>Dark on a schedule</span></label>
     <div id="schedule" class="schedule">
       <label class="time">from <input type="time" id="start" step="60"></label>
       <label class="time">until <input type="time" id="end" step="60"></label>
     </div>
-    <label><input type="radio" name="mode" value="system"><span>Follow system dark mode</span></label>
-    <label><input type="radio" name="mode" value="off"><span>Off</span></label>
+    <label><input type="radio" name="auto" value="system"><span>Follow system dark mode</span></label>
   </fieldset>
 
   <p class="hint">Darkens only Gmail's white reading pane and reply box. Changes apply instantly.</p>

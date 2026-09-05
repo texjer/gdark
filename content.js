@@ -132,6 +132,21 @@
     }
   }
 
+  // The compose box: Google paints its rounded container with a translucent
+  // blue ::before (a tint over whatever is behind). Tag that container so
+  // darkbox.css can repaint the tint as one solid surface for the toolbar
+  // row and the message field together.
+  function processCompose(tb) {
+    for (let e = tb.parentElement; e && e !== document.body; e = e.parentElement) {
+      if (e.classList.contains('gdb-compose')) return;
+      const ps = getComputedStyle(e, '::before');
+      if (ps.content !== 'none' && ps.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+        e.classList.add('gdb-compose');
+        return;
+      }
+    }
+  }
+
   // Chat renders some overlays (hovercards etc.) inside shadow roots, which
   // neither the injected stylesheet nor querySelectorAll can reach. Adopt
   // each open shadow root: inject the sweep styles, observe it, sweep it.
@@ -142,6 +157,7 @@
 .gdb-dim2 { background-color: #34343c !important; }
 .gdb-dim-before::before, .gdb-dim-after::after { background-color: #3f3f48 !important; }
 .gdb-lighten { color: #d8d8de !important; }
+.gdb-blue { color: #8ab4f8 !important; }
 .gdb-border { border-color: #3f3f48 !important; }
 .gdb-svg { filter: invert(0.75) hue-rotate(180deg); }
 ::selection { background-color: #3b5b8f !important; color: #f2f2f5 !important; }
@@ -164,6 +180,7 @@
     processPseudo(el);
     if (IS_CHAT) {
       if (el instanceof SVGSVGElement) return processSvg(el);
+      if (el.getAttribute('role') === 'textbox') processCompose(el);
       processBorders(el, s);
       if (el.shadowRoot) adoptShadowRoot(el.shadowRoot);
     }
@@ -184,13 +201,19 @@
     }
 
     // dark text directly on a dark background → lighten.
-    // Saturated colors (links, accents) keep their meaning.
-    if (el.classList.contains('gdb-lighten')) return;
+    // Saturated colors (links, accents) keep their meaning — except chat's
+    // deep blue (#0b57d0 on chips, links, "more unread"), which glares on
+    // dark and gets swapped for Google's own dark-surface blue.
+    if (el.classList.contains('gdb-lighten') || el.classList.contains('gdb-blue')) return;
     const hasText = [...el.childNodes].some(
       (n) => n.nodeType === 3 && n.textContent.trim()
     );
     if (hasText) {
       const c = parseRgb(s.color);
+      if (IS_CHAT && c && c[2] > c[0] + 80 && c[2] > c[1] + 40 && lumOf(c) < 110) {
+        el.classList.add('gdb-blue');
+        return;
+      }
       if (
         c &&
         lumOf(c) < 120 &&

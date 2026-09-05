@@ -31,11 +31,12 @@ Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert e
 - Emails that were already designed dark (they're detected and not re-inverted into blinding white)
 - Photos and logos — images are counter-inverted so they look normal
 
-**Modes (click the toolbar button)**
+**Controls (click the toolbar button)**
 
-- Always on
-- On a schedule — for example dark from 9 pm to 7 am and Gmail's normal look during the day, even if your system theme is dark all the time
+- A Light / Dark switch — one click flips it
+- Dark on a schedule — for example dark from 9 pm to 6 am (the default for new installs) and Gmail's normal look during the day, even if your system theme is dark all the time
 - Follow system dark mode
+- Flip the switch any time — the schedule or system rule takes back over at its next change
 - Off
 
 **How it works**
@@ -68,7 +69,7 @@ Use a throwaway or scrubbed inbox — screenshots are public.
 
 1. Before/after split: same email, Gmail dark theme, left white / right DarkBox.
 2. A reply open inside the card, showing the darkened To/Cc rows and toolbar.
-3. The popup with "On a schedule" selected and 21:00 → 07:00 filled in.
+3. The popup with "On a schedule" selected and 21:00 → 06:00 filled in.
 4. (optional) A dark-designed newsletter left un-inverted.
 
 ## Submission checklist
