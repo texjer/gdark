@@ -8,14 +8,15 @@
   <header>
     <img src="icons/icon-32.png" alt="" width="22" height="22">
     <span class="title">GDark</span>
+    <!-- One hit target: click anywhere on the pill to flip Gmail. The knob
+         carries the glyph for the mode you are in — sun left, moon right. -->
+    <button type="button" id="switch" class="toggle" role="switch" aria-checked="false" aria-label="Dark mode">
+      <span class="knob">
+        <svg class="glyph sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <svg class="glyph moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="currentColor"/></svg>
+      </span>
+    </button>
   </header>
-
-  <div id="switch" class="switch" role="radiogroup" aria-label="Gmail appearance">
-    <button type="button" role="radio" data-dark="false">
-      <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Light</button>
-    <button type="button" role="radio" data-dark="true">
-      <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z" fill="currentColor"/></svg>Dark</button>
-  </div>
   <p id="note" class="note"></p>
 
   <fieldset id="auto">

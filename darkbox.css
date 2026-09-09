@@ -52,11 +52,18 @@ html.gdark .nH.Hd .a8X .T-I-atl { /* keep the blue Send button un-inverted */
   filter: none;
 }
 
-/* white bars inside the card: reply-button row, smart-reply row, compose footer */
+/* white bars inside the card: reply-button row, smart-reply row */
 html.gdark :is(.iY, .nH.Hd) .nH,
-html.gdark :is(.iY, .nH.Hd) .nr.wR,
-html.gdark :is(.iY, .nH.Hd) .aC2 {
+html.gdark :is(.iY, .nH.Hd) .nr.wR {
   background-color: transparent !important;
+}
+/* .aC2 / .aC3 are Gmail's opaque sheet behind the docked compose shelf — the
+ * white that hides the reply body scrolling below the toolbar. Blanking them
+ * let the inverted body show through under the shelf (its text legible in the
+ * strip below the Send row), so they get painted the card color instead. */
+html.gdark :is(.iY, .nH.Hd) .aC2,
+html.gdark :is(.iY, .nH.Hd) .aC3 {
+  background-color: #1c1c21 !important;
 }
 
 /* Gmail chrome text inside the card */
@@ -127,8 +134,7 @@ html.gdark :is(.iY, .nH.Hd) .Am.editable img {
 
 /* expanded compose header: From / To / Cc / Bcc rows */
 html.gdark :is(.iY, .nH.Hd) .M9 .agh,   /* recipient area */
-html.gdark :is(.iY, .nH.Hd) .M9 .aGb,   /* recipient row bar */
-html.gdark :is(.iY, .nH.Hd) .aC3 {      /* compose footer strip */
+html.gdark :is(.iY, .nH.Hd) .M9 .aGb {  /* recipient row bar */
   background-color: transparent !important;
 }
 
@@ -238,8 +244,10 @@ html.gdark.gdb-chat [role="textbox"] {
   caret-color: #e3e3e8;
 }
 /* wrappers around the field that the sweep dimmed (Firefox paints the
- * field's own box) go transparent too; buttons keep their state layers */
-html.gdark.gdb-chat .gdb-compose :is(div, span):is(.gdb-dim, .gdb-dim2) {
+ * field's own box) go transparent too — but only the field's own ancestor
+ * chain (.gdb-field-wrap, tagged by content.js). Popups mounted inside the
+ * same container (the "+" Workspace tools menu) keep their dimmed surface. */
+html.gdark.gdb-chat .gdb-compose .gdb-field-wrap:is(.gdb-dim, .gdb-dim2) {
   background-color: transparent !important;
 }
 /* chat: Google's blue-600 (#0b57d0) text — smart-reply chips, "more
@@ -285,12 +293,60 @@ html.gdark.gdb-chat .gdb-lighten {
   color: #d8d8de !important;
 }
 
+/* Gmail pop-up menus (.J-M) — the sweep dims the white panel, but three
+ * pieces need explicit rules, and the highlight has to be static:
+ *  - .J-N-JX / .J-N-Jo icons are gstatic gm3 sprites (background-image on
+ *    a spacer <img>), near-black glyphs that disappear on the dark panel
+ *  - .J-Kh separator is a 1px #ebebeb border-top — a glaring white rule
+ *  - .J-N-JT / .J-N-JW (hover / keyboard highlight) is #eee, which the
+ *    sweep WOULD dim — but the class it adds never comes off, so every row
+ *    the mouse crossed stayed lit and hover read as no feedback at all.
+ *    Painting it here keeps hover a state instead of a scar: the computed
+ *    background is already dark when the sweep looks, so no tag is added.
+ *    These rules sit after the sweep-tag block so they win specificity ties. */
+html.gdark .J-M {
+  background-color: #26262c !important;
+  border-color: #3f3f48 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+html.gdark .J-M .J-N,
+html.gdark .J-M .J-N .J-N-Jz {
+  color: #e6e6eb !important;
+}
+html.gdark .J-M .J-N-JE .J-N-Jz,   /* disabled items keep reading as disabled */
+html.gdark .J-M .J-N-JE .J-N-atj {
+  color: #6f6f7a !important;
+}
+html.gdark .J-M .J-N-JX,
+html.gdark .J-M .J-N-Jo {
+  filter: invert(0.8);
+}
+html.gdark .J-M .J-N.J-N-JT,
+html.gdark .J-M .J-N.J-N-JW,
+html.gdark .J-M .J-N:hover {
+  background-color: #3a3a44 !important;
+  border-color: #3a3a44 !important;
+}
+html.gdark .J-M .J-Kh {
+  border-top-color: #3f3f48 !important;
+}
+
 /* floating compose action shelf (toolbar + Send dock over the content
  * when you scroll a tall reply): its white backdrop is an ::after
  * pseudo-element on .aDj — pseudo-elements have no classList, so the
  * content.js sweep can never tag them; this must stay a static rule */
 html.gdark :is(.iY, .nH.Hd) .aDj::after {
   background-color: #1c1c21 !important;
+}
+/* ...and the shelf's own edges. Gmail lifts it off the content with a
+ * rgba(0,0,0,.1) top shadow and outlines it with a #e1e3e1 border on ::before;
+ * both vanish on dark, so the toolbar had no outline and text scrolled into it
+ * with no seam. A light hairline on top does the separating here. */
+html.gdark :is(.iY, .nH.Hd) .aDj {
+  box-shadow: 0 -1px 0 rgba(162, 162, 172, 0.3), 0 -6px 12px rgba(0, 0, 0, 0.55) !important;
+}
+html.gdark :is(.iY, .nH.Hd) .aDj::before {
+  border-color: rgba(162, 162, 172, 0.4) !important;
 }
 /* undo/redo pill that rides on the docked shelf */
 html.gdark :is(.iY, .nH.Hd) .Bswxkd {
@@ -300,6 +356,12 @@ html.gdark :is(.iY, .nH.Hd) .Bswxkd {
 /* inline compose window frame (1px rounded border on td.I5) */
 html.gdark :is(.iY, .nH.Hd) td.I5 {
   border-color: rgba(162, 162, 172, 0.4) !important;
+}
+
+/* discard-draft trash: a gstatic delete sprite on div.og, in the inline
+ * reply's footer row rather than the .a8X row the pop-out compose rule covers */
+html.gdark :is(.iY, .nH.Hd) .oh .og {
+  filter: invert(0.8);
 }
 
 /* compose formatting toolbar (Sans Serif / B / I / U ...) */

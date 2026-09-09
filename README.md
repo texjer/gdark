@@ -53,11 +53,22 @@ Lint before shipping: `npx web-ext lint --source-dir . --ignore-files 'dist/**' 
 
 ## Release
 
-1. Bump `version` in `manifest.json`.
-2. `./build.sh` → `dist/gdark-<version>.zip`.
-3. Upload the same zip to https://addons.mozilla.org/developers/ and
-   https://chrome.google.com/webstore/devconsole. Listing copy is in
-   `store/listing.md`.
+`./publish.sh 2.3.1` bumps `manifest.json`, builds `dist/gdark-2.3.1.zip`, and
+submits it to both stores through
+[publish-browser-extension](https://github.com/aklinker1/publish-browser-extension)
+(Chrome Web Store API v2 with a service account; AMO with a JWT key pair).
+Credentials: `~/secrets/_Code/browser-stores.env` holds the service account,
+publisher id and AMO key pair shared by all texs.org extensions; `.env` (a
+symlink to `~/secrets/_Code/gdark/.env`) holds this extension's ids — keys in
+`.env.example`. `./publish.sh --dry-run` checks the credentials without
+uploading.
+
+The stores' listing text can't be set through the Chrome API, so wording
+changes in `store/listing.md` still get pasted into the dashboards by hand.
+
+Manual fallback: bump the version, `./build.sh`, upload the zip at
+https://addons.mozilla.org/developers/ and
+https://chrome.google.com/webstore/devconsole.
 
 Firefox only runs Mozilla-signed extensions, so the AMO upload is what makes
 the install survive restarts — even for your own use. Minimum Firefox is 127,

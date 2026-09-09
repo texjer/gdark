@@ -4,7 +4,7 @@
 const api = globalThis.browser ?? globalThis.chrome;
 const DEFAULTS = { dark: true, auto: 'schedule', override: null, start: '21:00', end: '06:00' };
 
-const switchBtns = [...document.querySelectorAll('#switch button')];
+const toggle = document.getElementById('switch');
 const radios = [...document.querySelectorAll('input[name="auto"]')];
 const schedule = document.getElementById('schedule');
 const startEl = document.getElementById('start');
@@ -76,10 +76,8 @@ function noteText(s) {
 
 function render() {
   const on = effective(settings);
-  switchBtns.forEach((b) => {
-    const isDark = b.dataset.dark === 'true';
-    b.setAttribute('aria-checked', String(isDark === on));
-  });
+  toggle.setAttribute('aria-checked', String(on));
+  toggle.title = on ? 'Gmail is dark — click for light' : 'Gmail is light — click for dark';
   radios.forEach((r) => (r.checked = r.value === settings.auto));
   schedule.classList.toggle('open', settings.auto === 'schedule');
   startEl.value = settings.start;
@@ -143,7 +141,7 @@ api.storage.sync.get(null, (raw) => {
   render();
 });
 
-switchBtns.forEach((b) => b.addEventListener('click', () => setDark(b.dataset.dark === 'true')));
+toggle.addEventListener('click', () => setDark(!effective(settings)));
 radios.forEach((r) => r.addEventListener('change', () => setAuto(r.value)));
 startEl.addEventListener('change', setTimes);
 endEl.addEventListener('change', setTimes);

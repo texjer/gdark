@@ -69,7 +69,8 @@ Use a throwaway or scrubbed inbox — screenshots are public.
 
 1. Before/after split: same email, Gmail dark theme, left white / right DarkBox.
 2. A reply open inside the card, showing the darkened To/Cc rows and toolbar.
-3. The popup with "On a schedule" selected and 21:00 → 06:00 filled in.
+3. The popup — `node store/make-popup-shot.mjs` renders it with a schedule on and a
+   hand-flipped Dark (`screenshot-2-modes.png`).
 4. (optional) A dark-designed newsletter left un-inverted.
 
 ## Submission checklist
@@ -94,3 +95,8 @@ Use a throwaway or scrubbed inbox — screenshots are public.
 4. Privacy practices tab: single purpose (above), permission justifications
    (above), "does not collect user data", certify compliance.
 5. Distribution: public, all regions. Submit for review (usually 1–3 days).
+
+## Chrome graphic assets
+- Store icon 128×128: `icons/icon-128.png`
+- Screenshots: the `store/screenshot-*.png` files above (1280×800, 24-bit PNG, no alpha)
+- Small promo tile 440×280 + marquee 1400×560: `node store/make-tiles.mjs` → `store/promo-small.png`, `store/promo-marquee.png`

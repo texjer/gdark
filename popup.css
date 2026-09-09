@@ -27,40 +27,52 @@ header {
   margin-bottom: 10px;
 }
 .title { font-weight: 600; font-size: 15px; }
-.switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 10px;
-  background: var(--well);
-}
-.switch button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 0;
+/* Header pill: one target, click anywhere to flip. The track states borrow
+   the segmented control's language — pale well for light, brand blue for
+   dark — and the sliding knob carries a coral sun or moon. */
+.toggle {
+  position: relative;
+  flex: none;
+  margin-left: auto;
+  width: 52px;
+  height: 28px;
+  padding: 0;
   border: 0;
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 600;
-  color: var(--muted);
-  background: transparent;
+  border-radius: 999px;
+  background: var(--well);
+  box-shadow: inset 0 0 0 1px var(--line); /* the off track is close to the
+                                              popup background — ring it */
   cursor: pointer;
+  transition: background 0.18s ease;
 }
-.switch button:hover { color: var(--ink); background: var(--hover); }
-/* The selected segment previews what it does: Light is a white card with a
-   coral sun, Dark is a blue card with a coral moon. Same in both themes. */
-.switch button[aria-checked="true"] {
+.toggle[aria-checked="true"] { background: var(--blue); box-shadow: none; }
+.toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   background: #ffffff;
-  color: #1a1a1a;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  cursor: default;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease;
 }
-.switch button[aria-checked="true"]:last-child { background: var(--blue); color: #ffffff; }
-.switch button[aria-checked="true"] .glyph { color: var(--coral); }
-.glyph { width: 18px; height: 18px; flex: none; }
+.toggle[aria-checked="true"] .knob { transform: translateX(24px); }
+/* both glyphs are stacked in the knob; only the current one is shown */
+.glyph {
+  grid-area: 1 / 1;
+  width: 15px;
+  height: 15px;
+  color: var(--coral);
+}
+.toggle[aria-checked="true"] .sun,
+.toggle[aria-checked="false"] .moon { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .toggle, .knob { transition: none; }
+}
 .note {
   margin: 8px 0 0;
   padding-left: 8px;

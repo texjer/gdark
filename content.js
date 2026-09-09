@@ -136,15 +136,22 @@
   // blue ::before (a tint over whatever is behind). Tag that container so
   // darkbox.css can repaint the tint as one solid surface for the toolbar
   // row and the message field together.
+  // The wrappers between the field and that container get .gdb-field-wrap:
+  // only those may go transparent — popups that Google mounts inside the
+  // same container (the "+" Workspace tools menu, slash-command list) must
+  // keep the dimmed background the sweep gives them.
   function processCompose(tb) {
+    const chain = [];
     for (let e = tb.parentElement; e && e !== document.body; e = e.parentElement) {
-      if (e.classList.contains('gdb-compose')) return;
+      if (e.classList.contains('gdb-compose')) break;
       const ps = getComputedStyle(e, '::before');
       if (ps.content !== 'none' && ps.backgroundColor !== 'rgba(0, 0, 0, 0)') {
         e.classList.add('gdb-compose');
-        return;
+        break;
       }
+      chain.push(e);
     }
+    for (const e of chain) e.classList.add('gdb-field-wrap');
   }
 
   // Chat renders some overlays (hovercards etc.) inside shadow roots, which
