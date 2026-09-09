@@ -20,7 +20,9 @@ SHARED="$HOME/secrets/_Code/browser-stores.env"
 [ -f "$SHARED" ] && { set -a; . "$SHARED"; set +a; }
 if [ -f .env ]; then
   set -a; . ./.env; set +a
-else
+elif [ -z "$CHROME_EXTENSION_ID" ]; then
+  # CI has no .env — it puts the same values in the environment (see
+  # .github/workflows/publish.yml); only complain when neither is there.
   echo "no .env — see .env.example" >&2; exit 1
 fi
 

@@ -1,0 +1,61 @@
+# Submits the extension to the Chrome Web Store and Firefox Add-ons when a
+# version tag is pushed: `git tag v2.3.2 && git push --tags` (the tag must
+# match manifest.json, so bump and commit first — ./publish.sh 2.3.2 --dry-run
+# does the bump locally if you want it in the same commit).
+#
+# Runs the same publish.sh the laptop runs; the only difference is where the
+# credentials come from — repo secrets instead of ~/secrets/_Code. Set them
+# once with `gh secret set` (see README).
+#
+# Manual runs (Actions tab → Publish → Run workflow) default to a dry run,
+# which validates both stores' credentials and uploads nothing.
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate credentials without uploading
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency: publish-stores
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tag must match manifest version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          manifest=$(python3 -c "import json;print(json.load(open('manifest.json'))['version'])")
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$manifest" != "$tag" ]; then
+            echo "tag $tag does not match manifest.json $manifest — bump the manifest and retag" >&2
+            exit 1
+          fi
+
+      - name: Build and submit
+        env:
+          # publish.sh reads these when there is no .env file
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+          # the whole service-account JSON; publish.sh wants a path to it
+          CHROME_SERVICE_ACCOUNT_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_KEY }}
+        run: |
+          printf '%s' "$CHROME_SERVICE_ACCOUNT_KEY" > "$RUNNER_TEMP/chrome-sa.json"
+          export CHROME_SERVICE_ACCOUNT_JSON="$RUNNER_TEMP/chrome-sa.json"
+          ./publish.sh ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}

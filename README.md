@@ -66,6 +66,26 @@ uploading.
 The stores' listing text can't be set through the Chrome API, so wording
 changes in `store/listing.md` still get pasted into the dashboards by hand.
 
+Or let GitHub do it: `.github/workflows/publish.yml` runs the same
+`publish.sh` when a version tag is pushed, so a release is
+
+```sh
+./publish.sh 2.3.2 --dry-run   # bumps manifest.json, checks credentials
+git commit -am "2.3.2" && git push
+git tag v2.3.2 && git push --tags
+```
+
+The workflow refuses to run if the tag and `manifest.json` disagree. Its
+credentials are repo secrets rather than `~/secrets`, set once with:
+
+```sh
+gh secret set CHROME_SERVICE_ACCOUNT_KEY < ~/secrets/_Code/<service-account>.json
+gh secret set CHROME_PUBLISHER_ID        # and CHROME_EXTENSION_ID
+gh secret set FIREFOX_JWT_ISSUER         # and FIREFOX_JWT_SECRET, FIREFOX_EXTENSION_ID
+```
+
+Actions tab → Publish → Run workflow does a credentials-only dry run.
+
 Manual fallback: bump the version, `./build.sh`, upload the zip at
 https://addons.mozilla.org/developers/ and
 https://chrome.google.com/webstore/devconsole.
