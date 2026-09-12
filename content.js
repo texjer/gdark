@@ -4,9 +4,10 @@
 //    newsletter would flip to blinding white).
 // 2. Sweep the card for Gmail chrome the static CSS missed — any
 //    still-white element gets .gdb-dim, any dark text on a dark
-//    background gets .gdb-lighten. This catches things whose class
-//    names vary or that we haven't enumerated (translate banner,
-//    "Summarize this email" chip, undo/redo pill, future Gmail churn).
+//    background gets .gdb-lighten — or .gdb-tint, if it is a color
+//    carrying meaning. This catches things whose class names vary or
+//    that we haven't enumerated (translate banner, "You were BCC'd"
+//    banner, undo/redo pill, future Gmail churn).
 //
 // Gating: gate.js flags <html class="gdark"> when DarkBox is active.
 // The sweeps only run while that class is present (the CSS is inert
@@ -44,6 +45,37 @@
 
   function lumOf(c) {
     return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+
+  function hslOf(c) {
+    const r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    if (max === min) return [0, 0, l];
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h;
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+    else if (max === g) h = ((b - r) / d + 2) * 60;
+    else h = ((r - g) / d + 4) * 60;
+    return [h, s, l];
+  }
+
+  // Colored text that is too dark for the dark surface now behind it —
+  // Gmail's amber "You were BCC'd on this message" banner, warning reds,
+  // link blues. The .gdb-lighten rule skips these on purpose: flattening
+  // them to gray would throw away the meaning the color carries. So keep
+  // the hue and lift the lightness instead. The value differs per element,
+  // so it rides on a custom property that darkbox.css reads; with the
+  // gdark class absent that rule is inert, like every other sweep tag.
+  function processTint(el, c) {
+    if (!c || el.classList.contains('gdb-tint')) return;
+    if (lumOf(c) >= 120) return;
+    const [h, s, l] = hslOf(c);
+    if (s < 0.2 || l > 0.5) return; // gray (gdb-lighten's job), or light enough
+    const sat = Math.round(Math.min(s, 0.85) * 100);
+    el.style.setProperty('--gdb-tint', `hsl(${Math.round(h)}, ${sat}%, 72%)`);
+    el.classList.add('gdb-tint');
   }
 
   // --- job 1: skip inverting emails that are already dark ---------------
@@ -164,6 +196,7 @@
 .gdb-dim2 { background-color: #34343c !important; }
 .gdb-dim-before::before, .gdb-dim-after::after { background-color: #3f3f48 !important; }
 .gdb-lighten { color: #d8d8de !important; }
+.gdb-tint { color: var(--gdb-tint) !important; }
 .gdb-blue { color: #8ab4f8 !important; }
 .gdb-border { border-color: #3f3f48 !important; }
 .gdb-svg { filter: invert(0.75) hue-rotate(180deg); }
@@ -203,6 +236,10 @@
       const c = parseRgb(s.backgroundColor);
       if (c && lumOf(c) > 210) {
         el.classList.add(lumOf(c) > 242 ? 'gdb-dim' : 'gdb-dim2');
+        // the surface just went dark under whatever color it hands its
+        // children, so lift that color here too — icons drawn with
+        // currentColor (the banner's ⓘ) inherit it and follow along
+        processTint(el, parseRgb(s.color));
         return;
       }
     }
@@ -221,13 +258,9 @@
         el.classList.add('gdb-blue');
         return;
       }
-      if (
-        c &&
-        lumOf(c) < 120 &&
-        Math.max(...c) - Math.min(...c) < 50 &&
-        effectiveBgLuminance(el) < 90
-      ) {
-        el.classList.add('gdb-lighten');
+      if (c && lumOf(c) < 120 && effectiveBgLuminance(el) < 90) {
+        if (Math.max(...c) - Math.min(...c) < 50) el.classList.add('gdb-lighten');
+        else processTint(el, c); // saturated — keep the hue, raise the lightness
       }
     }
   }

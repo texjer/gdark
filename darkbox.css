@@ -292,6 +292,15 @@ html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-lighten,
 html.gdark.gdb-chat .gdb-lighten {
   color: #d8d8de !important;
 }
+/* ...and colored text that would lose its meaning if it were flattened to
+ * gray (the amber "You were BCC'd" banner, warning reds, link blues) keeps
+ * its hue: content.js computes the lightened value per element and hands it
+ * over as --gdb-tint */
+html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-tint,
+html.gdark .J-M.gdb-tint,
+html.gdark.gdb-chat .gdb-tint {
+  color: var(--gdb-tint) !important;
+}
 
 /* Gmail pop-up menus (.J-M) — the sweep dims the white panel, but three
  * pieces need explicit rules, and the highlight has to be static:
