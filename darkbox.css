@@ -24,10 +24,16 @@ html.gdark .nH.a98.iY,
 html.gdark .nH.Hd {
   background-color: #1c1c21 !important;
 }
-/* compose window title bar ("New Message") and its title text */
+/* compose window title bar ("New Message" / "Re: ...") and its title text.
+ * Gmail paints the bar on .l.m — #f0f4f9, a faint blue, rounded 8px on top —
+ * inside the square .Hy. Painting .Hy squared the dialog's top corners off,
+ * so .Hy stays clear and .l.m gets a lifted slate with the same blue hint. */
 html.gdark .nH.Hd .nH.Hy,
 html.gdark .nH.Hd .Hy {
-  background-color: #26262c !important;
+  background-color: transparent !important;
+}
+html.gdark .nH.Hd .Hy .l.m {
+  background-color: #2d323d !important;
 }
 html.gdark .nH.Hd .aYF,
 html.gdark .nH.Hd .Hp {
@@ -63,6 +69,13 @@ html.gdark :is(.iY, .nH.Hd) .nr.wR {
  * strip below the Send row), so they get painted the card color instead. */
 html.gdark :is(.iY, .nH.Hd) .aC2,
 html.gdark :is(.iY, .nH.Hd) .aC3 {
+  background-color: #1c1c21 !important;
+}
+/* .btDi4d is the same idea at the bottom of the card: an empty 68px
+ * position:sticky strip, white on light, that masks the thread scrolling out
+ * under the card's lower edge. The .nH blanket above made it transparent, so
+ * smart-reply chips and separators showed through it; paint it too. */
+html.gdark .iY .nH.btDi4d {
   background-color: #1c1c21 !important;
 }
 
@@ -156,6 +169,14 @@ html.gdark :is(.iY, .nH.Hd) .ajz {
 html.gdark :is(.iY, .nH.Hd) button[class*="pYTkkf"] {
   color: #a2a2ac !important;
 }
+/* ...except the importance marker when it's on (.FqWqLc.bns): Gmail's yellow,
+ * or blue for the .Uieduc variant — the gray above flattened it to "off" */
+html.gdark :is(.iY, .nH.Hd) button.FqWqLc.bns {
+  color: rgb(251, 188, 4) !important;
+}
+html.gdark :is(.iY, .nH.Hd) button.FqWqLc.bns.Uieduc {
+  color: #8ab4f8 !important;
+}
 
 /* separators between messages in a conversation: Gmail's
  * rgba(100,121,143,0.12) border is invisible on dark */
@@ -216,8 +237,8 @@ html.gdark.gdb-chat body {
  * near-invisibility). Dark chrome and chat get an explicit blue;
  * inverted bodies get pre-inverted values that the filter turns into a
  * light-blue highlight with near-black text. */
-html.gdark :is(.iY, .nH.Hd, .J-M) ::selection,
-html.gdark :is(.iY, .nH.Hd, .J-M)::selection,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) ::selection,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7)::selection,
 html.gdark.gdb-chat ::selection {
   background-color: #3b5b8f !important;
   color: #f2f2f5 !important;
@@ -272,23 +293,23 @@ html.gdark.gdb-chat .gdb-svg {
  * backgrounds get dimmed (two levels so hover/selected rows still read),
  * light ::before/::after state layers get dimmed via their host, and dark
  * text sitting on a dark background gets lightened */
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim,
-html.gdark .J-M.gdb-dim,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim,
+html.gdark :is(.J-M, .aM7).gdb-dim,
 html.gdark.gdb-chat .gdb-dim {
   background-color: #26262c !important;
 }
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim2,
-html.gdark .J-M.gdb-dim2,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim2,
+html.gdark :is(.J-M, .aM7).gdb-dim2,
 html.gdark.gdb-chat .gdb-dim2 {
   background-color: #34343c !important;
 }
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-before::before,
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-dim-after::after,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim-before::before,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim-after::after,
 html.gdark.gdb-chat .gdb-dim-before::before,
 html.gdark.gdb-chat .gdb-dim-after::after {
   background-color: #3f3f48 !important;
 }
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-lighten,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-lighten,
 html.gdark.gdb-chat .gdb-lighten {
   color: #d8d8de !important;
 }
@@ -296,10 +317,18 @@ html.gdark.gdb-chat .gdb-lighten {
  * gray (the amber "You were BCC'd" banner, warning reds, link blues) keeps
  * its hue: content.js computes the lightened value per element and hands it
  * over as --gdb-tint */
-html.gdark :is(.iY, .nH.Hd, .J-M) .gdb-tint,
-html.gdark .J-M.gdb-tint,
+html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-tint,
+html.gdark :is(.J-M, .aM7).gdb-tint,
 html.gdark.gdb-chat .gdb-tint {
   color: var(--gdb-tint) !important;
+}
+
+/* subject-line label chips: the remove "×" (.hO) is a ::before glyph with no
+ * text node, so the sweep dims its half of the chip but never lightens it —
+ * it stayed #444746 (or black) on the dark chip. Colored chips the sweep
+ * leaves alone (the yellow "External") keep their own dark ×. */
+html.gdark :is(.iY, .nH.Hd) .ahR .hO:is(.gdb-dim, .gdb-dim2) {
+  color: #d8d8de !important;
 }
 
 /* Gmail pop-up menus (.J-M) — the sweep dims the white panel, but three
@@ -384,4 +413,39 @@ html.gdark :is(.iY, .nH.Hd) .J-Z div {
 /* toolbar glyphs are gstatic sprite background-images on .aaA divs */
 html.gdark :is(.iY, .nH.Hd) .M9 .aaA {
   filter: invert(0.8);
+}
+
+/* Smart Compose suggestion: the ghost text (.bxX inside the
+ * contenteditable=false .XjviVd span) and its "tab" key badge (.by3 > .by4)
+ * are mid-gray on light. On dark the ghost text reads like part of what you
+ * typed, and the sweep dims the badge to the generic dark well, so both get
+ * Google's dark-surface blue — the suggestion now reads as a suggestion.
+ * Must sit after the .gdb-dim rule: same specificity, later wins. */
+html.gdark :is(.iY, .nH.Hd) .XjviVd .bxX {
+  color: #8ab4f8 !important;
+}
+html.gdark :is(.iY, .nH.Hd) .XjviVd .by3 {
+  background-color: rgba(138, 180, 248, 0.2) !important;
+  border-color: rgba(138, 180, 248, 0.6) !important;
+  box-shadow: none !important;
+}
+html.gdark :is(.iY, .nH.Hd) .XjviVd .by4 {
+  color: #a8c7fa !important;
+}
+
+/* emoji picker (.aM7 — in the card for reactions, under <body> for compose).
+ * The sweep dims the panel, but two things it can't reach:
+ *  - the search box is an <input>, whose typed value is no text node, so the
+ *    "dark text on dark" check never fires and it stayed #1f1f1f
+ *  - the category row and the search glyph are SVGs drawn with currentColor
+ *    (#444746 on .bnH / .PETVs), with no text of their own either */
+html.gdark .aM7 input {
+  color: #e6e6eb !important;
+  caret-color: #e6e6eb;
+}
+html.gdark .aM7 input::placeholder {
+  color: #a2a2ac !important;
+}
+html.gdark .aM7 :is(.bnH, .PETVs) {
+  color: #c4c4cc !important;
 }

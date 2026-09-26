@@ -30,11 +30,12 @@
   // chrome — no arbitrary sender HTML — so the whole body is swept and no
   // invert filter is needed. In the Gmail document proper, the containers
   // are the reading-pane card, the pop-up "New Message" compose dialog, and
-  // Gmail's pop-up menus (.J-M — appended to <body>, outside the dialog;
+  // Gmail's pop-up menus (.J-M) and emoji picker (.aM7) — both can be
+  // appended to <body>, outside the card and the dialog;
   // already-dark ones are untouched because the sweep only ever dims
   // near-white backgrounds).
   const IS_CHAT = html.classList.contains('gdb-chat');
-  const CONTAINER = IS_CHAT ? 'body' : '.iY, .nH.Hd, .J-M';
+  const CONTAINER = IS_CHAT ? 'body' : '.iY, .nH.Hd, .J-M, .aM7';
 
   function parseRgb(rgb) {
     const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
@@ -234,7 +235,12 @@
       !el.classList.contains('gdb-dim2')
     ) {
       const c = parseRgb(s.backgroundColor);
-      if (c && lumOf(c) > 210) {
+      // colored label chips in the subject line (.ahR — the yellow
+      // "External" warning, user label colors) keep their own color: a
+      // pastel chip with its dark text reads fine on dark, and dimming it
+      // throws the color away. Only gray chips (Inbox) get dimmed.
+      const colorChip = c && el.closest('.ahR') && Math.max(...c) - Math.min(...c) >= 15;
+      if (c && lumOf(c) > 210 && !colorChip) {
         el.classList.add(lumOf(c) > 242 ? 'gdb-dim' : 'gdb-dim2');
         // the surface just went dark under whatever color it hands its
         // children, so lift that color here too — icons drawn with
