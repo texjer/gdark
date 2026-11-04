@@ -1,4 +1,4 @@
-Already switched Gmail to its Dark theme and still getting blinded every time you open an email? Same. Gmail's dark theme darkens the inbox, sidebar and toolbars — but the message you're actually reading, and the box you type your reply in, stay a huge bright white card. DarkBox darkens exactly that card, and nothing else.
+Already switched Gmail to its Dark theme and still getting blinded every time you open an email? Same. Gmail's dark theme darkens the inbox, sidebar and toolbars — but the message you're actually reading, and the box you type your reply in, stay a huge bright white card. DarkBox darkens that card. On a light or picture theme, it darkens the inbox, sidebar and toolbars too.
 
 Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert every website you visit. If you're happy with Google's own dark theme and just want the white areas gone, this is the small, boring fix.
 
@@ -7,10 +7,11 @@ Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert e
 - The email you're reading (the white card in the reading pane)
 - The inline reply / forward box, including the To / Cc / Bcc rows and the formatting toolbar
 - Gmail's own controls inside that card: subject, sender, dates, Reply / Forward buttons, "Show trimmed content"
+- On a light or picture theme: the inbox list, sidebar and toolbars as well (a picture theme's image is hidden while dark mode is on)
 
 **What it leaves alone**
 
-- Your Gmail theme, the inbox list, the sidebar — everything outside the card
+- On Gmail's Dark theme: the inbox list, the sidebar, everything outside the card
 - Emails that were already designed dark (they're detected and not re-inverted into blinding white)
 - Photos and logos — images are counter-inverted so they look normal
 
@@ -30,4 +31,4 @@ Gmail's own interface inside the card gets real dark colors. The email body — 
 
 No accounts, no analytics, no network requests. The only thing stored is your chosen mode and schedule, in the browser's own extension storage.
 
-Works with Gmail's Dark theme (Settings → Theme → Dark). Firefox 127 or newer. Not affiliated with Google; Gmail is a trademark of Google LLC.
+Works with any Gmail theme. Firefox 127 or newer. Not affiliated with Google; Gmail is a trademark of Google LLC.

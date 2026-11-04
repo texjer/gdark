@@ -1,8 +1,8 @@
 # GDark — dark mode for Gmail's white areas & Google Chat
 
-Dark-modes **just the white email card** in Gmail's reading pane — the message
-you're reading and the inline reply box — leaving the rest of your Gmail theme
-untouched. Also darkens Google Chat — the chat panel and pop-up
+Dark-modes Gmail's **white email card** — the message you're reading and the
+inline reply box. On Gmail's Dark theme that's all it touches; on a light or
+picture theme it darkens the inbox list, sidebar and toolbars too. Also darkens Google Chat — the chat panel and pop-up
 conversations inside Gmail, and the standalone chat.google.com. Works in
 Firefox and Chrome from one folder (Manifest V3).
 
@@ -38,6 +38,11 @@ Changes apply instantly in open Gmail tabs.
   videos are counter-inverted so photos look normal.
 - `content.js` detects emails that are *already* dark-designed and skips
   inverting them, so they don't flip to blinding white.
+- `content.js` also detects a light theme: dark text in the conversation rows
+  (`.zA`), or a white page if no rows are showing. That sets `html.gdb-light`
+  and widens the sweep from the card to the whole page, and darkbox.css paints
+  the rows' read / unread / selected states. A picture theme's image is hidden.
+  Gmail's Dark theme never trips it, so it keeps its own look.
 
 ## Develop / test locally
 

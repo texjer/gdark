@@ -11,11 +11,11 @@ extension", "gmail dark mode white area", "gmail reading pane white",
 
 ## Summary (AMO, ≤250 chars) / short description
 
-Already using Gmail's Dark theme, but every email still opens as a big white area? This tool darkens just that area and the reply box, and leaves the rest of Gmail alone. No data collected. Optional night-only schedule.
+Gmail's Dark theme still opens every email as a big white area, and light themes are bright all over. This tool darkens all of it, on any theme. On the Dark theme it only touches the white areas. No data collected. Optional night-only schedule.
 
 ## Description (both stores — AMO shows the first 250 chars above the fold)
 
-Already switched Gmail to its Dark theme and still getting blinded every time you open an email? Same. Gmail's dark theme darkens the inbox, sidebar and toolbars — but the message you're actually reading, and the box you type your reply in, stay a huge bright white card. DarkBox darkens exactly that card, and nothing else.
+Already switched Gmail to its Dark theme and still getting blinded every time you open an email? Same. Gmail's dark theme darkens the inbox, sidebar and toolbars — but the message you're actually reading, and the box you type your reply in, stay a huge bright white card. DarkBox darkens that card. On a light or picture theme, it darkens the inbox, sidebar and toolbars too.
 
 Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert every website you visit. If you're happy with Google's own dark theme and just want the white areas gone, this is the small, boring fix.
 
@@ -24,10 +24,11 @@ Most "dark mode for Gmail" extensions want to re-theme all of Gmail, or invert e
 - The email you're reading (the white card in the reading pane)
 - The inline reply / forward box, including the To / Cc / Bcc rows and the formatting toolbar
 - Gmail's own controls inside that card: subject, sender, dates, Reply / Forward buttons, "Show trimmed content"
+- On a light or picture theme: the inbox list, sidebar and toolbars as well (a picture theme's image is hidden while dark mode is on)
 
 **What it leaves alone**
 
-- Your Gmail theme, the inbox list, the sidebar — everything outside the card
+- On Gmail's Dark theme: the inbox list, the sidebar, everything outside the card
 - Emails that were already designed dark (they're detected and not re-inverted into blinding white)
 - Photos and logos — images are counter-inverted so they look normal
 
@@ -47,7 +48,7 @@ Gmail's own interface inside the card gets real dark colors. The email body — 
 
 No accounts, no analytics, no network requests. The only thing stored is your chosen mode and schedule, in the browser's own extension storage.
 
-Works with Gmail's Dark theme (Settings → Theme → Dark). Firefox 127 or newer. Not affiliated with Google; Gmail is a trademark of Google LLC.
+Works with any Gmail theme. Firefox 127 or newer. Not affiliated with Google; Gmail is a trademark of Google LLC.
 
 ## Categories / tags
 
@@ -67,11 +68,21 @@ Works with Gmail's Dark theme (Settings → Theme → Dark). Firefox 127 or newe
 
 Use a throwaway or scrubbed inbox — screenshots are public.
 
-1. Before/after split: same email, Gmail dark theme, left white / right DarkBox.
-2. A reply open inside the card, showing the darkened To/Cc rows and toolbar.
+1. Before/after split of a mock inbox (made-up email) — `screenshot-1-before-after.png`.
+2. The same split with a reply open: To row, toolbar, Smart Compose — `screenshot-3-reply.png`.
+   Both come from `node store/make-art.mjs`, so no real inbox is ever shown.
+5. The same split over a Google Chat conversation — `screenshot-4-chat.png` (also make-art.mjs).
 3. The popup — `node store/make-popup-shot.mjs` renders it with a schedule on and a
    hand-flipped Dark (`screenshot-2-modes.png`).
 4. (optional) A dark-designed newsletter left un-inverted.
+
+## Promo video (Chrome only — AMO has no video field)
+
+`node store/make-video.mjs` → `store/promo-video.mp4` (1920×1080, ~34 s, silent):
+the logo flies into a browser toolbar, a cursor opens the popup and flips the switch
+(dark spreads out from it), then the reply and chat scenes push in with the handle sweeping.
+`node store/make-video.mjs 6.5 9` writes stills at those seconds for checking a frame.
+Chrome wants a YouTube URL, not a file — upload it (unlisted is fine) and paste the link.
 
 ## Submission checklist
 
@@ -99,4 +110,5 @@ Use a throwaway or scrubbed inbox — screenshots are public.
 ## Chrome graphic assets
 - Store icon 128×128: `icons/icon-128.png`
 - Screenshots: the `store/screenshot-*.png` files above (1280×800, 24-bit PNG, no alpha)
-- Small promo tile 440×280 + marquee 1400×560: `node store/make-tiles.mjs` → `store/promo-small.png`, `store/promo-marquee.png`
+- Small promo tile 440×280 + marquee 1400×560: `node store/make-art.mjs` → `store/promo-small.png`, `store/promo-marquee.png`
+  (the same run also writes screenshots 1 and 3; pass names to render only some)

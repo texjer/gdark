@@ -1,4 +1,5 @@
-/* Gmail DarkBox — darkens only the reading-pane card (div.nH.a98.iY).
+/* Gmail DarkBox — darkens the reading-pane card (div.nH.a98.iY), plus the rest
+ * of the page on light themes (html.gdb-light, set by content.js).
  *
  * Every rule is scoped under html.gdark, which gate.js toggles according
  * to the user's mode (always / scheduled / follow system / off). With the
@@ -235,11 +236,13 @@ html.gdark.gdb-chat body {
 /* text selection: the default highlight is too close to our dark
  * backgrounds (and inside inverted email bodies it gets inverted into
  * near-invisibility). Dark chrome and chat get an explicit blue;
- * inverted bodies get pre-inverted values that the filter turns into a
- * light-blue highlight with near-black text. */
+ * inverted bodies get pre-inverted values that the filter turns into the
+ * same blue. Not a light blue: a sender's dark box (an OTP code on
+ * #111827) inverts to a light one, and a light highlight vanished on it. */
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) ::selection,
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7)::selection,
-html.gdark.gdb-chat ::selection {
+html.gdark.gdb-chat ::selection,
+html.gdark.gdb-light ::selection {
   background-color: #3b5b8f !important;
   color: #f2f2f5 !important;
 }
@@ -247,8 +250,8 @@ html.gdark :is(.iY, .nH.Hd) .a3s:not(.gdb-no-invert) ::selection,
 html.gdark :is(.iY, .nH.Hd) .a3s:not(.gdb-no-invert)::selection,
 html.gdark :is(.iY, .nH.Hd) .Am.editable ::selection,
 html.gdark :is(.iY, .nH.Hd) .Am.editable::selection {
-  background-color: #0e1c34 !important; /* → light blue after invert */
-  color: #ececec !important;            /* → near-black after invert */
+  background-color: #8aaade !important; /* → #3b5b8f after invert + hue-rotate */
+  color: #0d0d10 !important;            /* → #f2f2f5 */
 }
 
 /* chat: the compose box (toolbar row + message field) is one slate
@@ -281,10 +284,12 @@ html.gdark.gdb-chat hr {
   border-color: #3f3f48 !important;
   background-color: #3f3f48 !important;
 }
-html.gdark.gdb-chat .gdb-border {
+html.gdark.gdb-chat .gdb-border,
+html.gdark.gdb-light .gdb-border {
   border-color: #3f3f48 !important;
 }
-html.gdark.gdb-chat .gdb-svg {
+html.gdark.gdb-chat .gdb-svg,
+html.gdark.gdb-light .gdb-svg {
   filter: invert(0.75) hue-rotate(180deg);
 }
 
@@ -295,22 +300,27 @@ html.gdark.gdb-chat .gdb-svg {
  * text sitting on a dark background gets lightened */
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim,
 html.gdark :is(.J-M, .aM7).gdb-dim,
-html.gdark.gdb-chat .gdb-dim {
+html.gdark.gdb-chat .gdb-dim,
+html.gdark.gdb-light .gdb-dim {
   background-color: #26262c !important;
 }
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim2,
 html.gdark :is(.J-M, .aM7).gdb-dim2,
-html.gdark.gdb-chat .gdb-dim2 {
+html.gdark.gdb-chat .gdb-dim2,
+html.gdark.gdb-light .gdb-dim2 {
   background-color: #34343c !important;
 }
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim-before::before,
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-dim-after::after,
 html.gdark.gdb-chat .gdb-dim-before::before,
-html.gdark.gdb-chat .gdb-dim-after::after {
+html.gdark.gdb-chat .gdb-dim-after::after,
+html.gdark.gdb-light .gdb-dim-before::before,
+html.gdark.gdb-light .gdb-dim-after::after {
   background-color: #3f3f48 !important;
 }
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-lighten,
-html.gdark.gdb-chat .gdb-lighten {
+html.gdark.gdb-chat .gdb-lighten,
+html.gdark.gdb-light .gdb-lighten {
   color: #d8d8de !important;
 }
 /* ...and colored text that would lose its meaning if it were flattened to
@@ -319,7 +329,8 @@ html.gdark.gdb-chat .gdb-lighten {
  * over as --gdb-tint */
 html.gdark :is(.iY, .nH.Hd, .J-M, .aM7) .gdb-tint,
 html.gdark :is(.J-M, .aM7).gdb-tint,
-html.gdark.gdb-chat .gdb-tint {
+html.gdark.gdb-chat .gdb-tint,
+html.gdark.gdb-light .gdb-tint {
   color: var(--gdb-tint) !important;
 }
 
@@ -448,4 +459,38 @@ html.gdark .aM7 input::placeholder {
 }
 html.gdark .aM7 :is(.bnH, .PETVs) {
   color: #c4c4cc !important;
+}
+
+/* light Gmail themes (content.js adds .gdb-light when the inbox rows carry dark
+ * text): the sweep tags above darken the rest of the page, these are the parts
+ * that need to hold a state or that the sweep can't see. Row colors are static
+ * because sweep tags never come off, and selecting a row must be reversible.
+ * Read rows sit darker than unread, as they do in Gmail's own Dark theme. */
+html.gdark.gdb-light [role="main"],
+html.gdark.gdb-light .aeF,
+html.gdark.gdb-light .aeN {
+  background-color: #1c1c21 !important;
+}
+html.gdark.gdb-light .gdb-backdrop {
+  background-image: none !important;
+  background-color: #1c1c21 !important;
+}
+html.gdark.gdb-light .zA {
+  background-color: #26262c !important;
+}
+html.gdark.gdb-light .zA.yO {
+  background-color: #1c1c21 !important;
+}
+html.gdark.gdb-light .zA:hover {
+  background-color: #2f2f36 !important;
+}
+html.gdark.gdb-light .zA.x7 {
+  background-color: #33415c !important;
+}
+html.gdark.gdb-light .gdb-sprite,
+html.gdark.gdb-light .T-KT {
+  filter: invert(0.8);
+}
+html.gdark.gdb-light .T-KT.T-KT-Jp {
+  filter: none;
 }

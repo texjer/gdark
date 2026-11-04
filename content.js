@@ -35,7 +35,34 @@
   // already-dark ones are untouched because the sweep only ever dims
   // near-white backgrounds).
   const IS_CHAT = html.classList.contains('gdb-chat');
-  const CONTAINER = IS_CHAT ? 'body' : '.iY, .nH.Hd, .J-M, .aM7';
+  const CARDS = IS_CHAT ? 'body' : '.iY, .nH.Hd, .J-M, .aM7';
+  // On a light Gmail theme the card isn't the only bright thing: the inbox
+  // list, sidebar and toolbars are too. Then the whole document is swept, as
+  // in chat. On Gmail's Dark theme this stays off and only CARDS are touched.
+  let lightTheme = false;
+  const scope = () => (lightTheme ? 'body' : CARDS);
+
+  // true / false when the page says which, null when it can't tell. Dark text
+  // in a conversation row means a light list, whatever the row's opacity (image
+  // themes paint rows translucent). Without rows, fall back on the page color.
+  // Waits for [role=main] because Gmail's loading screen is white on every theme.
+  function pageLooksLight() {
+    if (!document.querySelector('[role="main"]')) return null;
+    const row = document.querySelector('.zA');
+    const rowInk = row && parseRgb(getComputedStyle(row).color);
+    if (rowInk) return lumOf(rowInk) < 120;
+    if (document.body.classList.contains('gdb-dim')) return true;
+    const page = parseRgb(getComputedStyle(document.body).backgroundColor);
+    return page ? lumOf(page) > 210 : null;
+  }
+
+  function checkTheme() {
+    if (IS_CHAT) return;
+    const light = pageLooksLight();
+    if (light === null) return;
+    lightTheme = light;
+    html.classList.toggle('gdb-light', light);
+  }
 
   function parseRgb(rgb) {
     const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
@@ -112,7 +139,7 @@
   // effective background: walk up until something paints
   function effectiveBgLuminance(el) {
     let e = el;
-    while (e && !e.matches(CONTAINER)) {
+    while (e && !e.matches(scope())) {
       const c = parseRgb(getComputedStyle(e).backgroundColor);
       if (c) return lumOf(c);
       e = e.parentElement;
@@ -133,7 +160,23 @@
     }
   }
 
-  // Chat-only helpers ---------------------------------------------------
+  // Icons on a light theme are near-black gstatic sprites painted as background
+  // images, and a theme's picture is a big background image. Both are told
+  // apart by size: small → lighten the glyph, most of the window → drop it so
+  // the dark surface isn't a bright photo.
+  function processImagery(el, s) {
+    if (s.backgroundImage === 'none' || !s.backgroundImage.includes('url(')) return;
+    if (el.classList.contains('gdb-sprite') || el.classList.contains('gdb-backdrop')) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return; // hidden: can't size it yet, next sweep will
+    if (r.width * r.height > innerWidth * innerHeight * 0.5) {
+      el.classList.add('gdb-backdrop');
+    } else if (r.width <= 48 && r.height <= 48 && s.backgroundImage.includes('gstatic.com')) {
+      el.classList.add('gdb-sprite');
+    }
+  }
+
+  // Chat and light-theme helpers ---------------------------------------------------
 
   // monochrome dark SVG icons (compose row, header buttons) are invisible
   // on the dark base; invert them, but never a colorful logo
@@ -219,10 +262,13 @@
     if (el.nodeType !== 1) return;
     const s = getComputedStyle(el);
     processPseudo(el);
-    if (IS_CHAT) {
+    if (IS_CHAT || lightTheme) {
       if (el instanceof SVGSVGElement) return processSvg(el);
-      if (el.getAttribute('role') === 'textbox') processCompose(el);
       processBorders(el, s);
+    }
+    if (lightTheme) processImagery(el, s);
+    if (IS_CHAT) {
+      if (el.getAttribute('role') === 'textbox') processCompose(el);
       if (el.shadowRoot) adoptShadowRoot(el.shadowRoot);
     }
 
@@ -273,7 +319,7 @@
 
   function excluded(el) {
     if (IS_CHAT) return false; // everything in a chat document is Google chrome
-    return !el.closest(CONTAINER) || !!el.closest('.a3s, .Am.editable');
+    return !el.closest(scope()) || !!el.closest('.a3s, .Am.editable');
   }
 
   function processTree(root) {
@@ -286,7 +332,8 @@
 
   function fullSweep() {
     if (!active()) return;
-    for (const card of document.querySelectorAll(CONTAINER)) {
+    checkTheme();
+    for (const card of document.querySelectorAll(scope())) {
       processEl(card); // a menu's own white backdrop is the container itself
       for (const el of card.querySelectorAll('*')) {
         if (!el.closest('.a3s, .Am.editable')) processEl(el);
@@ -329,7 +376,9 @@
     for (const m of mutations) {
       const t = m.target;
       if (t.nodeType === 1 && t.closest && !t.closest('.a3s, .Am.editable')) {
-        const c = t.closest(CONTAINER); // typing in the body doesn't count
+        // CARDS, not scope(): hovering a row would otherwise re-sweep the whole
+        // page. The mutated element itself is still processed just below.
+        const c = t.closest(CARDS); // typing in the body doesn't count
         if (c) scheduleContainerSweep(c);
       }
       if (m.type === 'childList') {
