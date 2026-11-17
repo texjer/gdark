@@ -6,8 +6,14 @@ picture theme it darkens the inbox list, sidebar and toolbars too. Also darkens 
 conversations inside Gmail, and the standalone chat.google.com. Works in
 Firefox and Chrome from one folder (Manifest V3).
 
-**Install:** [Firefox Add-ons (AMO)](https://addons.mozilla.org/firefox/) and the
-Chrome Web Store — both listings are in review; links land here once live.
+**Install:** 
+
+Note: the add-on is in "Dark on a schedule" mode by default so you may need to toggle it depending on the time of day to
+see it in action after installation.
+
+- [Firefox Add-Ons](https://addons.mozilla.org/en-US/firefox/addon/dark-mode-for-gmail-s-whitebox/)
+- [Chrome web store](https://chromewebstore.google.com/detail/gdark-dark-mode-for-gmail/oagonjfgkdfphhifjofmbdalflbecele)
+
 
 Toolbar popup has a **Light / Dark** switch plus an optional automatic rule:
 **Dark on a schedule** (new installs start on 21:00 → 06:00; crosses midnight fine) or **Follow
